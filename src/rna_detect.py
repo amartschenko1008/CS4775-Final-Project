@@ -10,6 +10,7 @@ Returns:
     output: list of sequences in motif file
 '''
 def read_fasta(filename):
+    # TODO: edit as needed to match structure needed for our test files (put test files inside src folder)
     with open(filename, "r") as f:
         output = []
         s = ""
@@ -25,9 +26,11 @@ def read_fasta(filename):
         output.append(s)
         return output
 
+# TODO: implement necessary functions and helpers
+
 def main():
+  # TODO: parse test fasta files and print function results
   print("Hello World!")
 
 if __name__ == '__main__':
     main()
-
