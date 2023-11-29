@@ -1,18 +1,5 @@
 #!/usr/bin/env python3
 
-'''Script for computing sequence alignments using Needleman-Wunsch with
-   linear gap penalties.
-Arguments:
-    f - FASTA file with sequences in FASTA format.
-    s - JSON with the score matrix for alignment.
-    d - The gap penalty for the alignment.
-
-Outputs:
-    Prints alignment to console.
-
-Example Usage:
-    python 2b.py -f sequences.fasta -s score_matrix.json -d 100
-'''
 
 import argparse
 import json
