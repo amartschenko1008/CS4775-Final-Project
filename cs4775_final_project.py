@@ -164,8 +164,3 @@ def removeDuplicates(fastq):
             fastdict[read] += 1
     return fastdict.keys()    
 
-seqA = 'catdoggoat'
-seqB = 'doggoatratcatdofgoat'
-d = 1
-s = 1
-print(SmithWaterman(seqA, seqB, d, s))
