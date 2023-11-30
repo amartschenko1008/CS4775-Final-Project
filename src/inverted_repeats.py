@@ -430,38 +430,19 @@
 #     test_calculate_lcp()
 #     test_calculate_rmq_lcp()
 #     main(sys.argv[1:])
-import re
+# import re
 
-def read_fasta(file_path):
-    """
-    Read a FASTA file and return the DNA sequence.
-    """
-    with open(file_path, 'r') as file:
-        lines = file.readlines()
+# def read_fasta(file_path):
+#     """
+#     Read a FASTA file and return the DNA sequence.
+#     """
+#     with open(file_path, 'r') as file:
+#         lines = file.readlines()
 
-    # Assuming that the sequence is in a single line after the header
-    sequence = ''.join(line.strip() for line in lines[1:])
-    return sequence
+#     # Assuming that the sequence is in a single line after the header
+#     sequence = ''.join(line.strip() for line in lines[1:])
+#     return sequence
 
-def find_inverted_repeats(dna_sequence, min_length=2, max_length=None, max_mismatches=0):
-    inverted_repeats = []
-
-    if max_length is None:
-        max_length = len(dna_sequence)
-
-    for length in range(min_length, max_length + 1):
-        for i in range(len(dna_sequence) - length + 1):
-            subsequence = dna_sequence[i:i + length]
-            reverse_complement = get_reverse_complement(subsequence)
-            mismatches = sum(base1 != base2 for base1, base2 in zip(subsequence, reverse_complement))
-    
-            if reverse_complement in dna_sequence[i+length:] and subsequence not in inverted_repeats:
-                starts = find_all_substrings(dna_sequence, reverse_complementi)
-                for s in starts:
-                    if i + length - 1 < s: 
-                        inverted_repeats.append((i, i + length - 1, s, s + length - 1))
-    
-    return inverted_repeats
 # def find_inverted_repeats(dna_sequence, min_length=2, max_length=None, max_mismatches=0):
 #     inverted_repeats = []
 
@@ -472,71 +453,210 @@ def find_inverted_repeats(dna_sequence, min_length=2, max_length=None, max_misma
 #         for i in range(len(dna_sequence) - length + 1):
 #             subsequence = dna_sequence[i:i + length]
 #             reverse_complement = get_reverse_complement(subsequence)
-
 #             mismatches = sum(base1 != base2 for base1, base2 in zip(subsequence, reverse_complement))
-
-#             if mismatches <= max_mismatches and reverse_complement in dna_sequence[i + length:]:
-#                 starts = find_all_substrings(dna_sequence, reverse_complement)
+    
+#             if reverse_complement in dna_sequence[i+length:] and subsequence not in inverted_repeats:
+#                 starts = find_all_substrings(dna_sequence, reverse_complementi)
 #                 for s in starts:
-#                     if i + length - 1 < s:
+#                     if i + length - 1 < s: 
 #                         inverted_repeats.append((i, i + length - 1, s, s + length - 1))
-
+    
 #     return inverted_repeats
 
+# def find_all_substrings(string, substring):
+#     # Initialize an empty list to store the 
+#     # indices of all occurrences of the substring.
+#     indices = []
+#     # Set the starting index i to 0.
+#     i = 0
+#     # Use a while loop to keep searching for 
+#     # the substring in the string.
+#     while i < len(string):
+#         # Use the find() method to find the first 
+#         #occurrence of the substring in the string
+#         j = string.find(substring, i)
+#         # If find() returns -1, it means that there  
+#         # are no more occurrences of the substring in 
+#         # the string, so break out of the loop.
+#         if j == -1:
+#             break
+#         indices.append(j)
+#         i = j + len(substring)
+#     # Return the list of indices.
+#     return indices
 
-def find_all_substrings(string, substring):
-    # Initialize an empty list to store the 
-    # indices of all occurrences of the substring.
-    indices = []
-    # Set the starting index i to 0.
-    i = 0
-    # Use a while loop to keep searching for 
-    # the substring in the string.
-    while i < len(string):
-        # Use the find() method to find the first 
-        #occurrence of the substring in the string
-        j = string.find(substring, i)
-        # If find() returns -1, it means that there  
-        # are no more occurrences of the substring in 
-        # the string, so break out of the loop.
-        if j == -1:
-            break
-        indices.append(j)
-        i = j + len(substring)
-    # Return the list of indices.
-    return indices
+# def get_reverse_complement(sequence):
+#     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+#     reverse_complement = ''.join(complement_dict[base] for base in reversed(sequence))
+#     return reverse_complement
 
-def get_reverse_complement(sequence):
-    complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-    reverse_complement = ''.join(complement_dict[base] for base in reversed(sequence))
-    return reverse_complement
-
-def print_inverted_repeats(inverted_repeats, dna_sequence):
-    print("Palindromes:")
-    for idx, (start_first, end_first, start_sec, end_sec) in enumerate(inverted_repeats, start=1):
-        first = dna_sequence[start_first: end_first + 1]
-        sec = dna_sequence[start_sec: end_sec + 1][::-1]
-        mismatches = "".join("|" if base1 != base2 else " " for base1, base2 in zip(first, sec))
+# def print_inverted_repeats(inverted_repeats, dna_sequence):
+#     print("Palindromes:")
+#     for idx, (start_first, end_first, start_sec, end_sec) in enumerate(inverted_repeats, start=1):
+#         first = dna_sequence[start_first: end_first + 1]
+#         sec = dna_sequence[start_sec: end_sec + 1][::-1]
+#         mismatches = "".join("|" if base1 != base2 else " " for base1, base2 in zip(first, sec))
 
         
-        print(f"{start_first:2d} {first:<2s} {end_first:2d}")
-        print(f"   {mismatches}")
-        print(f"{end_sec:2d} {sec:<2s} {start_sec:2d}\n")
+#         print(f"{start_first:2d} {first:<2s} {end_first:2d}")
+#         print(f"   {mismatches}")
+#         print(f"{end_sec:2d} {sec:<2s} {start_sec:2d}\n")
 
-def main():
-    fasta_file_path = 'test.fasta'
-    dna_sequence = read_fasta(fasta_file_path)
-    min_palindrome_half_length = 3
-    max_palindrome_half_length = 12
-    max_mismatch = 1
+# def main():
+#     fasta_file_path = 'test.fasta'
+#     dna_sequence = read_fasta(fasta_file_path)
+#     min_palindrome_half_length = 3
+#     max_palindrome_half_length = 12
+#     max_mismatch = 1
 
-    inverted_repeats = find_inverted_repeats(dna_sequence, min_length=min_palindrome_half_length, max_length=max_palindrome_half_length, max_mismatches=0)
-    print(inverted_repeats)
-    if inverted_repeats:
-        print_inverted_repeats(inverted_repeats, dna_sequence)
+#     inverted_repeats = find_inverted_repeats(dna_sequence, min_length=min_palindrome_half_length, max_length=max_palindrome_half_length, max_mismatches=0)
+#     print(inverted_repeats)
+#     if inverted_repeats:
+#         print_inverted_repeats(inverted_repeats, dna_sequence)
+#     else:
+#         print("No inverted repeats found.")
+
+
+# if __name__ == "__main__":
+#     main()
+#------------------------------------------------------------------------------------------
+# def find_inverted_repeats(dna_sequence, min_len, max_len, max_gap, mismatches):
+#     repeats = []
+
+#     for length in range(min_len, max_len + 1):
+#         for start1 in range(len(dna_sequence) - length + 1):
+#             end1 = start1 + length
+#             for start2 in range(len(dna_sequence) - length + 1):
+#                 end2 = start2 + length
+
+#                 # Check for valid gap
+#                 if abs(start2 - end1) <= max_gap:
+#                     sequence1 = dna_sequence[start1:end1]
+#                     sequence2 = reverse_complement(dna_sequence[start2:end2])
+
+#                     # Check for mismatches
+#                     mismatch_count = sum(1 for base1, base2 in zip(sequence1, sequence2) if base1 != base2)
+#                     if mismatch_count <= mismatches:
+#                         repeats.append((start1, end1, start2, end2))
+
+#     return repeats
+
+# def reverse_complement(sequence):
+#     complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+#     return ''.join(complement_dict[base] for base in reversed(sequence))
+
+# # Example usage:
+# dna_sequence = "ATGCGATCGATCGATCGATCGTAGCATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCG"
+# #dna_sequence = "ATGCAT"
+# min_len = 3
+# max_len = 7
+# max_gap = 2
+# mismatches = 0
+
+# result = find_inverted_repeats(dna_sequence, min_len, max_len, max_gap, mismatches)
+# print("Inverted repeats found:")
+# for repeat in result:
+#     print(f"Repeat 1: {repeat[0]}-{repeat[1]}, {dna_sequence[repeat[0]: repeat[1] + 1] if repeat[1] != repeat[2] else dna_sequence[repeat[0]: repeat[1]]}, Repeat 2: {repeat[2]}-{repeat[3]}, {dna_sequence[repeat[2]: repeat[3] + 1]}")
+#------------------------------------------------------------------------------------------
+import re
+def readFASTA(filename): #function to extract sequence from FASTA
+    fo = open(filename)
+    lines = fo.readlines() #read all lines in file
+    seq = '' #empty string to store extracted sequence
+    
+    for line in lines:
+        if line.startswith('>'): #ignore the header line which starts with '>'
+            pass
+        else:
+            line = re.sub('\n','',line) #replace newlines with nothing
+            seq += line #update seq variable with lines
+
+    return seq #return extracted sequence from fasta
+
+def readGB(filename): #function to extract sequence from Genbank
+    gb_seq = '^\s+\d+\s+(([a-z_]+\s*)+)' #regular expression (re) pattern to match sequence part    #\s+\d+\s+([a-zA-Z\s]+)+
+    fo = open(filename)
+    lines = fo.readlines() #read all lines in file
+    seq = '' #empty string to store extracted sequence
+    
+    for line in lines:
+        sequenceline = re.search(gb_seq,line) #use re pattern to search for sequence in file
+        if sequenceline: #if pattern found
+            grp1 = sequenceline.group(1) #for the first subgroup
+            sequenceline1 = re.sub('[\s]','',grp1) #replace whitespace with nothing
+            seq += sequenceline1 #update seq variable with lines
+
+    return seq #return extracted sequence from genbank
+
+def reverseComplement(seq): #function to commpute reverse complement
+    Base = {'a':'t','t':'a','g':'c','c':'g', '_':'_'} #dictionary to store base pair for A,G,C,T and spacer region
+    ComplementSeq = "" #empty string to store complement sequence
+
+    for i in range(0, len(seq)): #for every base in the whole original sequence length
+        pair = seq[i] #new variable to store each base in original sequence
+        ComplementSeq = ComplementSeq + Base[pair] #concatenate the complement base pair together using values from dictionary
+    reverseComplementSeq = ComplementSeq[::-1] #reverse the ComplementSeq
+    
+    return reverseComplementSeq #return the reverse complement sequence
+
+def CommonSequence(seq,revCom,minLength): #function to extract common sequence between the original and reverse complement
+    seqLength = len(seq) #compute the sequence length
+    commonSequence = [] #empty list to store common sequence
+
+    for i in range(seqLength,minLength-1,-1): #loop from the reverse of sequence
+    #until min palindrome length
+        for k in range(seqLength-i+1): #loop in the length of short sequence
+            if (seq[k:i+k] in revCom): #true if base present in reverse complement
+                flag = 1
+                for m in range(len(commonSequence)): #loop in the length of list
+                    if seq[k:i+k] in commonSequence[m]: #if base is already present in list
+                        flag = 0 
+                        break #break the loop
+
+                if flag == 1: #if base is not already present in list
+                    commonSequence.append(seq[k:i+k]) #add base to the list
+
+    if len(commonSequence): #true if list is not empty
+        return(commonSequence) #return list that contains common sequences
+    else: #false if list is empty
+        pass
+
+def AllPalindrome(allMatches): #function to find all palindromes
+    allPalindrome = [] #empty list to store all palindromes
+    for sequence in allMatches: #for every sequence in all the common sequence
+        #check if that particular sequence is equivalent to its reverse complement (means its a palindrome)
+        #and if that sequence does not exist in the list already
+        if sequence == reverseComplement(sequence) and sequence not in allPalindrome: #true
+            allPalindrome.append(sequence) #add that sequence to the list
+
+    return allPalindrome #return all the palindromes in the whole sequence
+
+def NormalPalindrome(allPalindrome): #function to find normal palindromes (without spacer region)
+    normalPalindrome = [] #empty list to store normal palindromes
+    for sequence in allPalindrome: #for every sequence in all the palindromes
+        if '_' not in sequence: #filter out palindromes that doesnt contain '_'
+            normalPalindrome.append(sequence) #add that palindrome to the list
+
+    if len(normalPalindrome): #print out all the normal palindromes if available
+        normalPalindrome = ', '.join(normalPalindrome) #convert normal palindrome list to string for output
+        print("\nNormal palindromes (non-repeating): \n",normalPalindrome,"\n") 
     else:
-        print("No inverted repeats found.")
+         print("There are no normal palindromes that can be detected.\n")
 
+def SpacerPalindrome(allPalindrome): #function to find spacer palindromes
+    allPalindrome = ' '.join(allPalindrome) #convert list of all palindromes to string for re
+    spacerPalindrome = re.findall(r'[agct]+_+[agct]+',allPalindrome) #find all spacer palindromes using re
 
-if __name__ == "__main__":
-    main()
+    if len(spacerPalindrome): #print out all the spacer palindromes if available
+        spacerPalindrome = ', '.join(spacerPalindrome) #convert spacer palindrome list to string for output
+        print("Reverse-complement non-repeating palindromes with an intervening spacer region: \n",spacerPalindrome,"\n")
+    else:
+        print("There is no reverse-complement non-repeating palindromes with an intervening spacer region that can be detected.\n")
+
+seq = readFASTA('rand1000.fasta') #call function fileInput()
+minLength = 3
+revCom = reverseComplement(seq) #call function reverseComplement()
+allMatches = CommonSequence(seq,revCom,minLength) #call function CommonSequence()
+allPalindrome = AllPalindrome(allMatches) #call function AllPalindrome()
+NormalPalindrome(allPalindrome) #call function NormalPalindrome()
+SpacerPalindrome(allPalindrome) #call function SpacerPalindrome()
