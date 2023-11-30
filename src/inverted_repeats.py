@@ -585,7 +585,7 @@ def readGB(filename):
     return seq #return extracted sequence from genbank
 
 def reverseComplement(seq): #function to commpute reverse complement
-    Base = {'a':'t','t':'a','g':'c','c':'g', '_':'_'} #dictionary to store base pair for A,G,C,T and spacer region
+    Base = {'a':'t','t':'a','g':'c','c':'g', '_':'_', 'A':'t','T':'a','G':'c','C':'g', '_':'_'} #dictionary to store base pair for A,G,C,T and spacer region
     ComplementSeq = "" #empty string to store complement sequence
 
     for i in range(0, len(seq)): #for every base in the whole original sequence length
@@ -631,7 +631,7 @@ def SpacerPalindrome(allPalindrome): #function to find spacer palindromes
     print(*spacerPalindrome, sep=', ') if spacerPalindrome else print("No spacer palindromes detected.")
     print()
 
-seq = readFASTA('rand1000.fasta') #call function fileInput()
+seq = readFASTA('test.fasta') #call function fileInput()
 minLength = 3
 revCom = reverseComplement(seq) #call function reverseComplement()
 allMatches = CommonSequence(seq,revCom,minLength) #call function CommonSequence()
