@@ -559,32 +559,28 @@
 #     print(f"Repeat 1: {repeat[0]}-{repeat[1]}, {dna_sequence[repeat[0]: repeat[1] + 1] if repeat[1] != repeat[2] else dna_sequence[repeat[0]: repeat[1]]}, Repeat 2: {repeat[2]}-{repeat[3]}, {dna_sequence[repeat[2]: repeat[3] + 1]}")
 #------------------------------------------------------------------------------------------
 import re
-def readFASTA(filename): #function to extract sequence from FASTA
-    fo = open(filename)
-    lines = fo.readlines() #read all lines in file
-    seq = '' #empty string to store extracted sequence
-    
-    for line in lines:
-        if line.startswith('>'): #ignore the header line which starts with '>'
-            pass
-        else:
-            line = re.sub('\n','',line) #replace newlines with nothing
-            seq += line #update seq variable with lines
+def readFASTA(filename):
+    seq_lines = []
+    with open(filename) as fo:
+        for line in fo:
+            if line.startswith('>'):
+                continue
+            seq_lines.append(re.sub('\n', '', line))
+    seq = ''.join(seq_lines)
+    return seq
 
-    return seq #return extracted sequence from fasta
+gb_seq_pattern = re.compile(r'^\s+\d+\s+(([a-z_]+\s*)+)')
 
-def readGB(filename): #function to extract sequence from Genbank
-    gb_seq = '^\s+\d+\s+(([a-z_]+\s*)+)' #regular expression (re) pattern to match sequence part    #\s+\d+\s+([a-zA-Z\s]+)+
-    fo = open(filename)
-    lines = fo.readlines() #read all lines in file
-    seq = '' #empty string to store extracted sequence
-    
-    for line in lines:
-        sequenceline = re.search(gb_seq,line) #use re pattern to search for sequence in file
-        if sequenceline: #if pattern found
-            grp1 = sequenceline.group(1) #for the first subgroup
-            sequenceline1 = re.sub('[\s]','',grp1) #replace whitespace with nothing
-            seq += sequenceline1 #update seq variable with lines
+def readGB(filename):
+    with open(filename) as fo:
+        lines = fo.readlines()
+        seq = ''
+        for line in lines:
+            sequenceline = gb_seq_pattern.search(line)
+            if sequenceline: #if pattern found
+                grp1 = sequenceline.group(1) #for the first subgroup
+                sequenceline1 = re.sub('[\s]','',grp1) #replace whitespace with nothing
+                seq += sequenceline1 #update seq variable with lines
 
     return seq #return extracted sequence from genbank
 
@@ -621,37 +617,19 @@ def CommonSequence(seq,revCom,minLength): #function to extract common sequence b
     else: #false if list is empty
         pass
 
-def AllPalindrome(allMatches): #function to find all palindromes
-    allPalindrome = [] #empty list to store all palindromes
-    for sequence in allMatches: #for every sequence in all the common sequence
-        #check if that particular sequence is equivalent to its reverse complement (means its a palindrome)
-        #and if that sequence does not exist in the list already
-        if sequence == reverseComplement(sequence) and sequence not in allPalindrome: #true
-            allPalindrome.append(sequence) #add that sequence to the list
+def AllPalindrome(allMatches):
+    return [sequence for sequence in allMatches if sequence == reverseComplement(sequence)]
 
-    return allPalindrome #return all the palindromes in the whole sequence
-
-def NormalPalindrome(allPalindrome): #function to find normal palindromes (without spacer region)
-    normalPalindrome = [] #empty list to store normal palindromes
-    for sequence in allPalindrome: #for every sequence in all the palindromes
-        if '_' not in sequence: #filter out palindromes that doesnt contain '_'
-            normalPalindrome.append(sequence) #add that palindrome to the list
-
-    if len(normalPalindrome): #print out all the normal palindromes if available
-        normalPalindrome = ', '.join(normalPalindrome) #convert normal palindrome list to string for output
-        print("\nNormal palindromes (non-repeating): \n",normalPalindrome,"\n") 
-    else:
-         print("There are no normal palindromes that can be detected.\n")
+def NormalPalindrome(allPalindrome):
+    normalPalindrome = [sequence for sequence in allPalindrome if '_' not in sequence]
+    print("\nNormal palindromes (non-repeating):\n", *normalPalindrome, sep=', ') if normalPalindrome else print("There are no normal palindromes that can be detected.\n")
 
 def SpacerPalindrome(allPalindrome): #function to find spacer palindromes
-    allPalindrome = ' '.join(allPalindrome) #convert list of all palindromes to string for re
-    spacerPalindrome = re.findall(r'[agct]+_+[agct]+',allPalindrome) #find all spacer palindromes using re
-
-    if len(spacerPalindrome): #print out all the spacer palindromes if available
-        spacerPalindrome = ', '.join(spacerPalindrome) #convert spacer palindrome list to string for output
-        print("Reverse-complement non-repeating palindromes with an intervening spacer region: \n",spacerPalindrome,"\n")
-    else:
-        print("There is no reverse-complement non-repeating palindromes with an intervening spacer region that can be detected.\n")
+    allPalindromeStr = ' '.join(allPalindrome)
+    spacerPalindrome = re.findall(r'[agct]+_+[agct]+', allPalindromeStr)
+    print("Reverse-complement non-repeating palindromes with an intervening spacer region:")
+    print(*spacerPalindrome, sep=', ') if spacerPalindrome else print("No spacer palindromes detected.")
+    print()
 
 seq = readFASTA('rand1000.fasta') #call function fileInput()
 minLength = 3
