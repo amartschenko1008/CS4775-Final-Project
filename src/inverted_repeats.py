@@ -559,7 +559,9 @@
 #     print(f"Repeat 1: {repeat[0]}-{repeat[1]}, {dna_sequence[repeat[0]: repeat[1] + 1] if repeat[1] != repeat[2] else dna_sequence[repeat[0]: repeat[1]]}, Repeat 2: {repeat[2]}-{repeat[3]}, {dna_sequence[repeat[2]: repeat[3] + 1]}")
 #------------------------------------------------------------------------------------------
 import re
-def readFASTA(filename):
+import argparse
+
+def read_fasta(filename):
     seq_lines = []
     with open(filename) as fo:
         for line in fo:
@@ -584,8 +586,8 @@ def readGB(filename):
 
     return seq #return extracted sequence from genbank
 
-def reverseComplement(seq): #function to commpute reverse complement
-    Base = {'a':'t','t':'a','g':'c','c':'g', '_':'_', 'A':'t','T':'a','G':'c','C':'g', '_':'_'} #dictionary to store base pair for A,G,C,T and spacer region
+def reverse_complement(seq): #function to commpute reverse complement
+    Base = {'a':'t','t':'a','g':'c','c':'g', '_':'_', 'A':'t','T':'a','G':'c','C':'g', '_':'_', 'N': 'N'} #dictionary to store base pair for A,G,C,T and spacer region
     ComplementSeq = "" #empty string to store complement sequence
 
     for i in range(0, len(seq)): #for every base in the whole original sequence length
@@ -595,46 +597,74 @@ def reverseComplement(seq): #function to commpute reverse complement
     
     return reverseComplementSeq #return the reverse complement sequence
 
-def CommonSequence(seq,revCom,minLength): #function to extract common sequence between the original and reverse complement
-    seqLength = len(seq) #compute the sequence length
-    commonSequence = [] #empty list to store common sequence
+def common_sequence(seq,rev_com,min_len): #function to extract common sequence between the original and reverse complement
+    seq_length = len(seq) #compute the sequence length
+    common_sequence = [] #empty list to store common sequence
 
-    for i in range(seqLength,minLength-1,-1): #loop from the reverse of sequence
+    for i in range(seq_length,min_len-1,-1): #loop from the reverse of sequence
     #until min palindrome length
-        for k in range(seqLength-i+1): #loop in the length of short sequence
-            if (seq[k:i+k] in revCom): #true if base present in reverse complement
+        for k in range(seq_length-i+1): #loop in the length of short sequence
+            if (seq[k:i+k] in rev_com): #true if base present in reverse complement
                 flag = 1
-                for m in range(len(commonSequence)): #loop in the length of list
-                    if seq[k:i+k] in commonSequence[m]: #if base is already present in list
+                for m in range(len(common_sequence)): #loop in the length of list
+                    if seq[k:i+k] in common_sequence[m]: #if base is already present in list
                         flag = 0 
                         break #break the loop
 
                 if flag == 1: #if base is not already present in list
-                    commonSequence.append(seq[k:i+k]) #add base to the list
+                    common_sequence.append([seq[k:i+k], k, i+k]) #add base to the list
 
-    if len(commonSequence): #true if list is not empty
-        return(commonSequence) #return list that contains common sequences
+    if len(common_sequence): #true if list is not empty
+        return(common_sequence) #return list that contains common sequences
     else: #false if list is empty
         pass
 
-def AllPalindrome(allMatches):
-    return [sequence for sequence in allMatches if sequence == reverseComplement(sequence)]
+def all_palindrome(allMatches):
+    return [sequence for sequence in allMatches if sequence[0] == reverse_complement(sequence[0]) and 'N' not in sequence[0]]
 
 def NormalPalindrome(allPalindrome):
-    normalPalindrome = [sequence for sequence in allPalindrome if '_' not in sequence]
+    normalPalindrome = [sequence for sequence in allPalindrome if 'N' not in sequence[0]]
     print("\nNormal palindromes (non-repeating):\n", *normalPalindrome, sep=', ') if normalPalindrome else print("There are no normal palindromes that can be detected.\n")
 
 def SpacerPalindrome(allPalindrome): #function to find spacer palindromes
+    print(allPalindrome)
     allPalindromeStr = ' '.join(allPalindrome)
     spacerPalindrome = re.findall(r'[agct]+_+[agct]+', allPalindromeStr)
-    print("Reverse-complement non-repeating palindromes with an intervening spacer region:")
-    print(*spacerPalindrome, sep=', ') if spacerPalindrome else print("No spacer palindromes detected.")
+    #print("Reverse-complement non-repeating palindromes with an intervening spacer region:")
+    #print(*spacerPalindrome, sep=', ') if spacerPalindrome else print("No spacer palindromes detected.")
+    print(spacerPalindrome) if spacerPalindrome else print("No spacer palindromes detected.")
     print()
 
-seq = readFASTA('test.fasta') #call function fileInput()
-minLength = 3
-revCom = reverseComplement(seq) #call function reverseComplement()
-allMatches = CommonSequence(seq,revCom,minLength) #call function CommonSequence()
-allPalindrome = AllPalindrome(allMatches) #call function AllPalindrome()
-NormalPalindrome(allPalindrome) #call function NormalPalindrome()
-SpacerPalindrome(allPalindrome) #call function SpacerPalindrome()
+# Example Usage:
+# python inverted_repeats.py -f test.fasta -min 2 -out repeats.txt
+def main():
+    parser = argparse.ArgumentParser(
+    description='Parse a sequence to uncover locations of inverted repeats.')
+    parser.add_argument('-f', action="store", dest="f", type=str, required=True)
+    parser.add_argument('-min', action="store", dest="min", type=int,
+    required=True)
+    parser.add_argument('-out', action="store", dest="out", type=str,
+    required=True)
+
+    args = parser.parse_args()
+    fasta_file = args.f
+    min_len = args.min
+    output_file = args.out
+    seq = read_fasta(fasta_file)
+    print(len(seq))
+    
+    rev_com = reverse_complement(seq)
+    all_matches = common_sequence(seq,rev_com, min_len)
+    all_palindromes = all_palindrome(all_matches)
+
+    with open(output_file, "w") as f:
+        f.write("start - end\n")
+        f.write("-----------\n")
+        f.write("\n".join([("%d - %d" % (palindrome[1], palindrome[2])) for palindrome in all_palindromes]))
+        f.write("\n")
+
+if __name__ == "__main__":
+    main()
+
+
+#------------------------------------------------------------------------------------------
